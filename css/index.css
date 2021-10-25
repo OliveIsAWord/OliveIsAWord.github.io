@@ -1,3 +1,7 @@
+h1 {
+    text-align: center;
+}
+
 .content {
     background-color: rgb(220, 230, 240);
     text-align: justify;
@@ -17,4 +21,8 @@
     color: steelblue;
     text-decoration: none;
     text-decoration-color: steelblue;
+}
+
+.content img {
+    max-width: 100%;
 }
