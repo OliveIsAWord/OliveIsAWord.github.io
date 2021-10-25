@@ -1,0 +1,20 @@
+.content {
+    background-color: rgb(220, 230, 240);
+    text-align: justify;
+    text-align-last: right;
+    padding: 2em;
+    width: 50vw;
+    margin: auto;
+    /*
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    */
+}
+
+.content h2 {
+    text-align-last: left;
+    color: steelblue;
+    text-decoration: none;
+    text-decoration-color: steelblue;
+}
