@@ -1,28 +1,79 @@
+:root {
+    background: var(--color1);
+    color: var(--color8);
+}
+
 h1 {
+    text-align: center;
+    font-size: 2.5em;
+}
+
+nav {
     text-align: center;
 }
 
 .content {
-    background-color: rgb(220, 230, 240);
+    background-color: var(--color2);
     text-align: justify;
     text-align-last: right;
-    padding: 2em;
+    padding: 1.5em;
+    padding-top: 0.5em;
+    padding-bottom: 3em;
     width: 50vw;
     margin: auto;
-    /*
     display: flex;
     flex-direction: column;
+    /*
     justify-content: center;
     */
 }
 
 .content h2 {
+    font-size: 2em;
+    margin-top: 0.4em;
+    margin-bottom: 0em;
     text-align-last: left;
-    color: steelblue;
+    color: var(--color7);
+    font-weight: bolder;
     text-decoration: none;
-    text-decoration-color: steelblue;
+}
+
+.content a {
+    text-decoration: none;
+    font-weight: bolder;
+}
+
+.content a:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--color7);
 }
 
 .content img {
     max-width: 100%;
+    max-height: 100%;
+}
+
+
+
+
+
+:root.slso8 {
+    --color1: #0d2b45;
+    --color2: #203c56;
+    --color3: #544e68;
+    --color4: #8d697a;
+    --color5: #d08159;
+    --color6: #ffaa5e;
+    --color7: #ffd4a3;
+    --color8: #ffecd6;
+}
+:root.custodian {
+    --color1: #2b3634;
+    --color2: #474848;
+    --color3: #6e5f52;
+    --color4: #a2856c;
+    --color5: #a0a294;
+    --color6: #dcb9a0;
+    --color7: #f3dbc6;
+    --color8: #fffefe;
 }
