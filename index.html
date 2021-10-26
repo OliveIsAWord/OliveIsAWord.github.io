@@ -42,6 +42,20 @@
     awa
     </nav>
     <div class="content">
+        <a href="sudoku">
+            <h2>Interactive Sudoku Solver</h2>
+        </a>
+        <p>A visual Sudoku solver that implements a variety of easy to expert strategies. Create and solve Sudoku puzzles for yourself, or let the computer take care of it all.</p>
+        <img src="https://wallpaperaccess.com/full/1369012.jpg" />
+    </div>
+    <div class="content">
+        <a href="https://github.com/godot-rust/godot-rust/pull/801" target="_blank">
+            <h2>My Crowning Achievement</h2>
+        </a>
+        <p>I made a slight tweak to the godot-rust logo to fix a rendering error.</p>
+        <img src="https://wallpaperaccess.com/full/1369012.jpg" />
+    </div>
+    <div class="content">
         <a href="https://github.com/godot-rust/godot-rust/pull/801" target="_blank">
             <h2>Lorem Ipsum</h2>
         </a>
@@ -70,3 +84,24 @@
 -->
 </body>
 </html>
+
+<!--
+const img = document.querySelector('#myimage')
+if (window.matchMedia &&
+    window.matchMedia('(prefers-color-scheme: dark)').matches) {
+  img.style.filter="invert(100%)";
+}
+
+There is a problem though: what if the user changes mode while using our website?
+
+We can detect the mode change using an event listener, like this:
+
+window.matchMedia('(prefers-color-scheme: dark)')
+      .addEventListener('change', event => {
+  if (event.matches) {
+    //dark mode
+  } else {
+    //light mode
+  }
+})
+-->

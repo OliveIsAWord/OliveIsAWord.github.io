@@ -1,0 +1,46 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Olive's Sudoku</title>
+    <meta name="description" content="A personal website to show off my work.">
+    <meta name="author" content="Olive Is A Word">
+
+    <meta property="og:title" content="Olive's Sudoku">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://oliveisaword.github.io/sudoku">
+    <meta property="og:description" content="An interactive Sudoku solver.">
+
+    <!-- Google Fonts -->
+<!--
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Khula&family=Catamaran&family=Exo+2&family=Lilita+One&family=Changa+One&display=swap" rel="stylesheet">
+-->
+    <link rel="icon" href="/favicon.ico">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+    <link rel="stylesheet" href="css/sudoku.css">
+
+
+    <script type="text/javascript"
+        src="https://cdn.jsdelivr.net/npm/brython@3.10/brython.min.js">
+    </script>
+    <script type="text/javascript"
+        src="https://cdn.jsdelivr.net/npm/brython@3.10/brython_stdlib.js">
+    </script>
+</head>
+
+<body onload="brython()">
+    <!-- This div is filled in by the Brython script -->
+    <div id='sudoku-board'></div>
+    <script type="text/python" src="brython\sudoku.py"></script>
+<!--
+    <script src="js/scripts.js"></script>
+-->
+</body>
+</html>

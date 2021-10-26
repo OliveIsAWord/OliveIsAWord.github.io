@@ -87,6 +87,9 @@ nav {
     .content {
         width: 85%;
     }
+    p {
+        font-size: 1em;
+    }
 }
 
 
