@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Round 11 Code Review</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="round11.css" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Round 11 Code Review</h1>
+</header>
+<p>This is an Olive-approved overview of a select number of submissions
+which caught my eye, mostly for being simple to read. This document will
+also have code reviews despite obtuse, obfuscated code being quite
+desirable in a competition such as this.</p>
+<h2 id="entry-2-sus.js">Entry #2 (sus.js)</h2>
+<p>A simple RLE scheme. Very nice variable naming.</p>
+<h3 id="algorithm-overview">Algorithm Overview</h3>
+<p>Compressed data is represented as pairs of bytes. The first byte is
+the actual data byte, and the second byte is the number of times to
+repeat the data byte. This means runs have a maximum length of 256.</p>
+<h3 id="code-review">Code Review</h3>
+<p>Incoming data really should be stored in a byte-length pair, with
+that pair only being pushed to <code>sussy</code> when said data is a
+different value or the length is too large. Doing this would allow more
+flexibility as well, such as the possibility of encoding length as an
+arbitrary-sized int, or encoding multiple bytes in a single pair.</p>
+<h3 id="best-case-for-compression">Best Case For Compression</h3>
+<p>Texts primarily made of runs that are about 20-5000 bytes in length.
+Other compression schemes would encode larger runs much better.</p>
+<h3 id="worst-case-for-compression">Worst Case For Compression</h3>
+<p>Any data with no repeating bytes. The compressed data would be twice
+as large.</p>
+<h2 id="entry-3-zip.zip.py">Entry #3 (zip.zip.py)</h2>
+<p>This algorithm is great for data with many 2-byte-aligned byte
+pairs.</p>
+<h3 id="algorithm-overview-1">Algorithm Overview</h3>
+<p>Up to 255 of the most common pairs are stored in the first part of
+the compressed data. Then, each byte pair in the data is encoded with
+bytes 1-255 corresponding with the declared pairs, or 0 followed by two
+raw bytes (or optionally just one if it’s at the end of the data).</p>
+<h3 id="code-review-1">Code Review</h3>
+<p>This entry is clearly written in a half-golf fashion, and will be
+scrutinized as such. Better code will only be presented if it is also
+more succinct.</p>
+<p>The method of turning data into pairs is clunky; it’s better to do
+something like <code>zip(data[::2], data[1::2])</code>. A Counter from
+the collections module would be the more pythonic way of finding the 255
+most common pairs. With a call to <code>__import__</code> it might be a
+bit smaller too. The way the final compressed data is created is awful,
+but it’s not immediately obvious how to fix it with fewer characters. A
+single element tuple can be written as <code>(x,)</code>. In the
+expression <code>([0, first] * (first != None))</code> the parentheses
+are unneeded and possibly misleading.</p>
+<p>The code could possibly be cleaner and more compact by using some
+<code>next</code> function which takes one byte from an iterator. This
+would likely be better than trying to maintain state between loops.</p>
+<p>A general issue with the compression method: It will not encode
+unaligned pairs of bytes. For <code>abababab</code> the compressed data
+is smaller (8 -&gt; 7), but for <code>ab ab ab ab</code> the compressed
+data is larger (11 -&gt; 14). Fixing this would likely require a total
+rewrite.</p>
+<p>Besides that, it’s a handful of nits. <code>data[0]*2+1)</code>
+should be assigned to a variable. <code>list(compressed[byte-1])</code>
+is redundant. Etc. etc.</p>
+<h3 id="best-case-for-compression-1">Best Case For Compression</h3>
+<p>Maybe about 10-200 instances of up to 255 2-byte-aligned byte pairs
+with little else.</p>
+<h3 id="worst-case-for-compression-1">Worst Case For Compression</h3>
+<p>Most every other data. Compression will make many inputs around 50%
+larger.</p>
+<h2 id="entry-4-kolmo.py">Entry #4 (kolmo.py)</h2>
+<p>Likely named after <a
+href="https://en.wikipedia.org/wiki/Kolmogorov_complexity">Kolmogorov
+Complexity</a>, this code theoretically outputs the shortest brainfuck
+program which prints out the given data. In practice, your computer
+would never halt on any data except <code>b''</code> or
+<code>b'\0'</code>, save for an out of memory error.</p>
+<p>This entry is invalid by the challenge rules for returning a string
+as the compressed data rather than bytes. I still love it.</p>
+<h3 id="algorithm-overview-2">Algorithm Overview</h3>
+<p>The implementation boils down to a breadth-first-search on all
+possible brainfuck programs, starting with the shortest ones first.
+There is a list of all currently generated programs; at every step,
+every program is run for one step and another program is added until one
+halts with the correct output. Decompression is as simple as running the
+given brainfuck program.</p>
+<h3 id="code-review-2">Code Review</h3>
+<p>This code is dumb in many ways which are likely intentional (and
+cute).</p>
+<p>When I said “all possible brainfuck programs”, I really meant
+(probably) all possible arrays of bytes. Hopefully I don’t need to tell
+you how wildly inefficient this is. Also, all brainfuck programs are
+allocated 30k bytes of tape. Also also, the tape cannot be grown, so
+these programs are actually FSAs; though, the fact that code size is
+unbounded means that it’s still possible to compress any given data.</p>
+<p>The brainfuck implementation used is less than compliant.
+<code>&lt;</code> and <code>&gt;</code> are swapped, which doesn’t
+really matter but is very funny. The underflow check on the
+<code>-</code> instruction is broken (checks for 256 rather than -1).
+When checking for a matching <code>[</code>, the interpreter will gladly
+decrement the instruction pointer into the negatives; paired with
+Python’s indexing semantics, programs like <code>+][</code> will happily
+run. This is also true of <code>&lt;</code> for the tape pointer, though
+negative indexing into tape is often undefined behavior anyway. Most
+egregiously, the first byte of any program is skipped. That is
+especially bad in this case because in order to pad that extra byte, the
+number of explored programs will have to grow about 256 times
+larger.</p>
+<p>Every single program terminates with a Python exception, which is
+both slow and extremely error-prone. Many real errors were masked by the
+<code>try except</code> blocks. The fact it doesn’t exen use
+<code>except Exception</code> means the catch will even recognize
+<code>KeyboardInterrupt</code> and the like.</p>
+<p>Otherwise, there are many extremely questionable programming choices
+which make this code look rushed and gives possible insight into
+previous iterations and/or goals of the program. <code>match</code> is
+defined at the start of the <code>instruction</code> despite both
+occurrences of the variable redefining it immediately, making it totally
+pointless. In those two cases, <code>match</code> is also defined before
+it might ever be used, which is strange. When finding matching brackets,
+<code>while match &gt; 0:</code> is checked when it perhaps should be
+<code>while match:</code> - the one time this code is concerned about
+erroneous negatives, and it isn’t even useful. The <code>,</code>
+instruction is a bizarre no-op, consisting of two statements - an
+orphaned equality check and an assignment to a field which doesn’t
+exist. <code>elif</code> isn’t used when checking the current
+instruction for some reason. Every instance field is passed as an
+argument to <code>__init__</code> despite the only actually useful
+parameter being the brainfuck code itself. If the other arguments were
+really necessary, it should’ve been made a <code>dataclass</code>.</p>
+<h3 id="code-review-2-now-with-performance.">Code Review 2: Now With
+Performance.</h3>
+<p>This extra section is made with some twisted adoration of the
+submitter. I want to buy them a beer.</p>
+<p>The following is possibly the biggest performance hit of the entire
+code: no brainfuck program is ever removed from the list of programs
+iterated over. This one detail, along with every other performance issue
+mentioned before, means that nothing but <code>b''</code> or
+<code>b'\0'</code> could ever conceivably be compressed on most
+computers. Take the input <code>b'\x01'</code>, simply a single byte
+with the value 1. The shortest brainfuck program to output this would be
+<code>+.</code>. Since the first byte is skipped, the first encountered
+valid program would be <code>\0+.</code>, which occurs on iteration
+3,091,457. Every program generated before would still be in memory, with
+a 30,000 element long python list allocated for each.
+<code>sys.getsizeof</code> tells me each of these zero-ed lists is
+240,056 bytes. So in total, at least 742,122,801,592 bytes allocated
+just for tape. 742 gigabytes of RAM is hardly reasonable for most
+machines, and that’s not even including the size overhead from the
+<code>BrainfuckProgram</code> class itself, and of course Python’s
+relatively poor performance.</p>
+<h3 id="exploration-and-optimization">Exploration and Optimization</h3>
+<p>This entry was fascinating enough to warrant an extra extra section.
+To discover most of these points, I had to make heavy modification of
+the code to make it more performant. This was primarily focused in 5
+areas:</p>
+<ul>
+<li>Dynamic allocation. Tape will only be allocated as needed, rather
+than all upfront.</li>
+<li>More efficient code generation. No longer includes literally every
+byte as characters, just the seven that are useful.</li>
+<li>Culling halted programs. brainfuck programs are only included in the
+next step if they still have code to run and can conceivably output the
+desired data (see point 4).</li>
+<li>Pre-validation. Certain types of brainfuck code, such as those
+including an empty loop, a lack of <code>.</code>, or NOPs such as
+<code>+-</code>, are never included in the list of programs.</li>
+<li>Post-validation. Given the current program output and desired data,
+if the program has already outputted too much data or has made a mistake
+in at least one byte, that program is stopped prematurely.</li>
+</ul>
+<p>These changes made it possible to generate values up to
+<code>\x0a</code> (the highly sought after newline character) in a
+‘reasonable’ time, as well as multibyte data such as
+<code>\x00\x01\x02\x03</code>.It can even generate loops, for example on
+data like <code>\x03\x02\x01</code>. This is all still orders of
+magnitude computationally below <code>\x10</code>, which is the smallest
+byte value for which it is fewer bytes to use a loop rather than a
+series of adds. This necessitates a search in the space of 7 ^ 15 =
+4,747,561,509,943 possible programs, which is currently still
+infeasible. Necessary changes would include: - a rewrite in a
+high-performance language like Rust. - A more intelligent method of
+brainfuck code generation which culls the search space significantly by
+only generating ‘sensible’ programs and removing equivalent programs
+while not making any false negatives (e.g. valid programs which would
+output the correct data in fewer bytes). - Integrating validation checks
+within the brainfuck runtime, such as checking each outputted character
+just once, and detecting simple infinite loops.</p>
+<h3 id="best-case-for-compression-2">Best Case For Compression</h3>
+<p>The more the data size grows, the more potential for an arbitrary
+algorithm to beat any other general form of compression.</p>
+<h3 id="worst-case-for-compression-2">Worst Case For Compression</h3>
+<p>Any short data will be extremely inefficient to store as a brainfuck
+program, especially when each instruction is 1 byte.</p>
+<h2 id="entry-6-squish.c">Entry #6 (squish.c)</h2>
+<p>Another simple RLE algorithm.</p>
+<h3 id="algorithm-overview-3">Algorithm Overview</h3>
+<p>The algorithm is almost exactly the same as Entry #2, except the
+length byte is the actual length rather than one less than the length,
+which is slightly less efficient.</p>
+<h3 id="code-review-3">Code Review</h3>
+<p>I am neither proficient nor terribly knowledgeable in C, so forgive
+me if my words are unhelpful. That being said, I hate these macros. The
+fact that it implicitly binds to variables not even visible to it is
+especially sus, as well as the implicit check that stops potential
+memory errors with <code>data[0]</code>. And since this otherwise looks
+like standard C, it’s almost certainly not an attempt at obfuscation. I
+don’t know quite how to fix it, but I do not like it.</p>
+<h3 id="bestworst-case-for-compression">Best/Worst Case For
+Compression</h3>
+<p>Nearly the same as Entry #2, although this entry will never perform
+better because of the wasted length byte value of 0.</p>
+<h2 id="entry-7-py">Entry #7 (py)</h2>
+<p>This entry scares me. I can only hazard predictions of this
+submission through reverse engineering. I really hope the submitter
+gives a breakdown of this all, because the whole thing is
+fascinating.</p>
+<p>Unfortunately, it is invalid by the competition rules because
+<code>compress</code> throws an exception when given an empty bytes
+object. <code>decompress</code> will decode an empty bytestring to
+itself. Also it might be unable to represent compressed data of more
+than about 7.5 GB (2 ** 32 words * 1.75 bytes per word).</p>
+<h3 id="algorithm-archaeology">Algorithm Archaeology</h3>
+<p>Any and all of this could be wrong.</p>
+<p>The compressed message is a series of 14-bit words, prepended by a
+4-byte unsigned int indicating the number of words. My current working
+theory is the algorithm is some kind of iterative pairing compression
+based on a frequency table that seems to be optimized for English text.
+<code>bped_inv</code> seems to contain the 768 most expected pairs.
+That, combined with the 256 raw byte values, make up all of the 14-bit
+space. The keys are pairs of 14-bit words, and the value is a single
+14-bit word which is strictly larger than either element of the
+pair.</p>
+<p>Let’s take an example. the input <code>b'peoplE'</code>, which
+represents the bytes (112,101,111, 112, 108, 69). The first byte-pair
+(112, 101) maps to 413 according to <code>bped_inv</code>. The next
+byte-pair (111, 112) maps to 345. Finally, (108, 69) does not have a
+mapping, so it maps to 108 and shifts by just one byte in the input
+data. Then, no more data follows (69,), so it maps to 69. This process
+then repeats until an entire round of pairing does not make the data any
+smaller. On the next round for example, (413, 345) maps to 513.</p>
+<p>Now that we roughly understand the compression, we can decode for
+ourselves all of these 14-bit ‘characters’ via <code>bped_inv</code>.
+Under the hood, decompression is done with <code>real_bped</code> in
+constant time per word, but this little hack works for us.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>decrypted <span class="op">=</span> [<span class="bu">bytes</span>([i]) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">256</span>)]</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">256</span>, <span class="dv">1024</span>):</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    possible <span class="op">=</span> [pair <span class="cf">for</span> pair, v <span class="kw">in</span> bped_inv.items() <span class="cf">if</span> v <span class="op">==</span> i]</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span>(<span class="bu">len</span>(possible) <span class="op">==</span> <span class="dv">1</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    a, b <span class="op">=</span> possible[<span class="dv">0</span>]</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    decrypted.append(decrypted[a] <span class="op">+</span> decrypted[b])</span></code></pre></div>
+<p>Some of these decrypted phrases are quite telling. A curated
+selection:</p>
+<pre><code>&#39;discordapp.com/&#39;, &#39;literally &#39;, &#39;discordapp&#39;, &#39;something &#39;, &#39;actually &#39;, &#39;language &#39;, &#39;tran&#39;, &#39;::&#39;, &#39;probably &#39;, &#39;((S(K&#39;, &#39;ings &#39;, &#39;ving &#39;, &#39;take &#39;, &#39;ways &#39;, &#39;um&#39;, &#39;0 &#39;, &#39;ob&#39;, &#39;C &#39;, &#39;int&#39;, &#39;wr&#39;, &#39;= &#39;, &#39;++&#39;, &#39;((&#39;, &#39;: &#39;, &#39;sp&#39;, &#39;why &#39;, &#39;```\n&#39;, &#39;⍺&#39;, &#39;←&#39;, &#39;⍵&#39;, &#39;APL &#39;, &#39;asm&#39;, &#39;lyr&#39;,</code></pre>
+<p>I’m no expert, but this looks like text from a Discord chat log.
+Particularly from a user or users fluent in APL, SKI combinator
+calculus, C, and Assembly.</p>
+<h2 id="code-review-4">Code Review</h2>
+<p>The biggest issue is that some words seem impossible to generate from
+<code>compress</code>. Try as I might, I cannot find any input data that
+will generate the <code>discord</code> word code (which is 732). The
+current algorithm is too greedy. It seems a non-trivial challenge to
+come up with a performant scheme to encode any data into these words
+optimally, and to prove such. Such a problem might be NP-complete in the
+general case.</p>
+<p>Perhaps the initial length could’ve been a bigint, for example using
+LEB128, or possibly been removed entirely. For small messages, the 4
+bytes of initial data really eat away at the compression ratio. And of
+course, that would remove any possibility of running up against that 7.5
+GB limit.</p>
+<h3 id="best-case-for-compression-3">Best Case For Compression</h3>
+<p>The messages of Palaiologos.</p>
+<h3 id="worst-case-for-compression-3">Worst Case For Compression</h3>
+<p>Text with a lot of capital letters (e.g. all-caps or varying caps)
+except for <code>AAAAAAAA</code>. Non-text. Anything that has no
+pairs.</p>
+<h2 id="entry-9-potato.py">Entry #9 (potato.py)</h2>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> bz2</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> compress(<span class="bu">input</span>):</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    bz2.compress(<span class="bu">input</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> decompress(<span class="bu">input</span>):</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    bz2.decompress(<span class="bu">input</span>)</span></code></pre></div>
+<p>Remarkable. More remarkable is the fact that these functions don’t
+actually return anything, so this submission is also invalid. The rest
+of this review will assume that the returns are properly included.</p>
+<h3 id="algorithm-overview-4">Algorithm Overview</h3>
+<p>The algorithm used is <a
+href="https://en.wikipedia.org/wiki/Bzip2">bzip2</a> written in Python
+in the standard library.</p>
+<h3 id="code-review-5">Code Review</h3>
+<p>There are efforts that could’ve been made to make the code more
+compact. For example:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> bz2</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>compress <span class="op">=</span> bz2.compress</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>decompress <span class="op">=</span> bz2.decompress</span></code></pre></div>
+<p>Or even better:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> bz2 <span class="im">import</span> compress, decompress</span></code></pre></div>
+<h3 id="bestworst-case-for-compression-1">Best/Worst Case For
+Compression</h3>
+<p>Eh. This is probably the best general compression algorithm besides
+Entry #4. For smaller data, the other more naive algorithms will mostly
+beat it.</p>
+<h2 id="entry-11-main.rs">Entry #11 (main.rs)</h2>
+<p>Have you ever wanted to compress bees? Boy do I have the algorithm
+for you.</p>
+<h3 id="algorithm-overview-5">Algorithm Overview</h3>
+<p>This is a very simple algorithm. If the input data is
+<code>bees</code>, it’s compressed to <code>\0</code>. Otherwise, if the
+data is all zeroes, the compressed data is double that number of zeroes.
+Otherwise, the data is encoded as is.</p>
+<h3 id="code-review-6">Code Review</h3>
+<p>Bad. I already regret giving this an entry.</p>
+<h3 id="best-case-for-compression-4">Best Case For Compression</h3>
+<p><code>bees</code> and empty data.</p>
+<h3 id="worst-case-for-compression-4">Worst Case For Compression</h3>
+<p>Any string of null bytes.</p>
+<h2 id="entry-12-good_compression.py">Entry #12
+(good_compression.py)</h2>
+<p>This was my submission! The name is my attempt at <a
+href="https://www.youtube.com/watch?v=PTcvbDbVbtM">comedy</a>; despite
+my best intentions, it’s actually quite poor at compressing much of
+anything. It encodes bytes by the offset from the value of the previous
+byte, with smaller offsets taking less space than larger ones.</p>
+<h3 id="algorithm-overview-6">Algorithm Overview</h3>
+<p>The compressed data is a list of what I will lovingly call Evilints,
+the greatests intentions going down and down the circles - it’s a
+bitstring. It might be easier to see how each number is encoded
+first.</p>
+<pre><code>0 -&gt; 0
+1 -&gt; 100
+2 -&gt; 101
+3 -&gt; 11000
+4 -&gt; 11001
+5 -&gt; 11010
+6 -&gt; 11011
+7 -&gt; 1110000
+8 -&gt; 1110001
+And so on...</code></pre>
+<p>I struggled a fair bit trying to come up with the correct way to
+implement and interpret this little scheme, and I am having more
+difficulty trying to explain it. Firstly, it starts with a number of 1
+bits indicating the length of the payload, followed by a 0. Then, the
+decoded value is a 1 bit followed by the payload, all minus 1.</p>
+<p>e.g.</p>
+<pre><code>1110 is read, which means a 3 bit payload
+payload is read - it has a value of 001
+1 followed by 001 is 1001
+1001 = 9, minus 1 = 8
+therefor
+1110001 -&gt; 8</code></pre>
+<p>But it gets worse. In order to represent negative numbers, an extra
+calculation is done before encoding to wrangle every integer into
+non-negative space. The initial value is doubled, and if it’s negative
+then it’s subtracted by one. With that, 4 maps to 8, -4 maps to 7, -5
+maps to 9, etc. This is technically not required, since every byte could
+be represented with a positive offset using overflow. So the actual
+final encoding is more like this:</p>
+<pre><code> 0 -&gt; 0
+-1 -&gt; 100
+ 1 -&gt; 101
+-2 -&gt; 11000
+ 2 -&gt; 11001
+-3 -&gt; 11010
+ 3 -&gt; 11011
+-4 -&gt; 1110000
+ 4 -&gt; 1110001
+And so on...</code></pre>
+<p>Evilints are slightly clever but not terribly useful. Only numbers in
+[-7, 7] are encoded smaller than a byte, otherwise it will be larger.
+It’s pretty clear from a glance at the encodings that this is not an
+efficient scheme for much higher numbers. Most numbers are encoded with
+twice the number of bits as their regular binary form. This is as
+opposed to a format like LEB128, which approaches 8/7 the number of bits
+compared to the binary form. Anyway, I should probably discuss the
+actual algorithm now, which is comparatively simpler.</p>
+<p>The first byte is encoded as its difference from 0 (a.k.a. just the
+value of the byte), and every subsequent byte is encoded as its
+difference from the previous byte, all in Evilints. This continues until
+every byte of data is encoded, at which point the compressed data is
+appended with 1s until byte-aligned (an exercise for the reader to find
+why it must be 1s, and why that’s actually a lie). The decoding process
+is not difficult to understand from there.</p>
+<p>One important note! The bitstrings are read least significant bit
+first, so the order of the bits in each byte might look backwards to
+human eyes.</p>
+<h3 id="code-review-7">Code Review</h3>
+<p><del>I am quite happy with the code itself, which is obviously
+golfed. My mind is still whirring on 1 or 2 ideas to reduce the code
+size, but otherwise I think it’s fine as is.</del></p>
+<p>Fuck. Here’s a list of somewhat obvious golf optimizations. Thank you
+to all the people scrutinizing my code.</p>
+<ul>
+<li>Use <code>from itertools import*</code>.</li>
+<li>In function <code>t</code>, <code>o&amp;1</code> could have been
+bound to a variable. Maybe <code>o&gt;&gt;1</code> as well, I haven’t
+tried it.</li>
+<li>Semicolon joining. To be honest, I have no idea how that works.</li>
+<li>Removing <code>StopIteration</code> and leaving a raw
+<code>except</code>. This was a conscious choice; I want at least a
+<em>little</em> type safety. The API-in-spirit is sacred to me!</li>
+<li><code>return [1]...</code> on line 4 has an unnecessary space.</li>
+</ul>
+<p>I don’t have much experience code golfing, so I imagine the gay women
+on this server could give me some pointers. Maybe I should’ve used more
+<code>exec</code>. The main issue i take is with the execution of the
+concept. Evilints should have been adjusted to suit this application
+better (e.g. every leading 1 could’ve equated to 2 payload bits, values
+outside of [-255, 255] could have been eliminated to save space or
+utilized somehow). I was hoping this would be pretty good at compressing
+uppercase ASCII, but the ideal compression range of Evilints was far too
+small.</p>
+<h3 id="best-case-for-compression-5">Best Case For Compression</h3>
+<p>Data with sporadic but small differences between bytes.</p>
+<h3 id="worst-case-for-compression-5">Worst Case For Compression</h3>
+<p>Most data, but especially ones with large offsets between neighboring
+characters.</p>
+<h2 id="honorable-mentions">Honorable Mentions</h2>
+<p>Because I feel bad for the people I excluded.</p>
+<ul>
+<li><p>Entry #1: Rust code that does not spark joy. Looks vaguely
+QOI-ish. Cute use of <code>cfg</code> macros.</p></li>
+<li><p>Entry #5: Very cute concept. I wish the sacred texts played a
+larger role somehow.</p></li>
+<li><p>Entry #8: Looks very QOI-ish. Seems alright.</p></li>
+<li><p>Entry #10: No clue. I’m so glad I can’t read PHP. I hope the
+submitter is okay mentally after this.</p></li>
+<li><p>Entry #13: Nope.</p></li>
+</ul>
+<h2 id="and-thats-it">And That’s It</h2>
+<p>Maybe I put too much effort into this. Maybe too little. Sorry if I
+didn’t review your submission. Sometimes you just think about something
+for hours on end for days on end and you’ve just got to write it down
+and show it to humans to justify to your erratic mind that you haven’t
+wasted all that time. So yeah.</p>
+</body>
+</html>

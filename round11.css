@@ -1,0 +1,112 @@
+/*
+position:sticky;
+position:-webkit-sticky;
+position:-moz-sticky;
+position:-ms-sticky;
+position:-o-sticky;
+*/
+
+
+
+body {
+    background: #101528;
+    color: #CEDEFF;
+    font-family: 'Catamaran', sans-serif;
+    font-weight: 500;
+    font-size: 1.2em;
+    line-height: 1.2em;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+}
+
+code {
+    background: #000000;
+    color: #FF0E50;
+}
+
+.sourceCode {
+    background: #000000;
+    color: #FFFFFF;
+    margin: 0.4em;
+}
+
+h1, h2, h3 {
+    font-family: 'Changa One', sans-serif;
+    text-transform: uppercase;
+    color: #A880FF;
+}
+
+h1 {
+    text-align: center;
+    font-size: 3em;
+}
+
+h2 {
+    padding-top: 3em;
+    font-size: 2em;
+}
+
+nav {
+    text-align: center;
+}
+
+.content {
+    background-color: var(--color2);
+    text-align: justify;
+    text-align-last: right;
+    padding: 1.5em;
+    padding-top: 0.4em;
+    width: 40%;
+    margin: auto;
+    margin-bottom: 1.5em;
+    display: flex;
+    flex-direction: column;
+    /*
+    justify-content: center;
+    */
+}
+
+.content h2 {
+    font-size: 2em;
+    margin-top: 0.4em;
+    margin-bottom: -0.2em;
+    text-align-last: left;
+    color: var(--color7);
+    font-weight: bolder;
+    text-decoration: none;
+}
+
+.content p {
+    /* text-indent: 2em; */
+}
+
+.content a {
+    text-decoration: none;
+    font-weight: bolder;
+}
+
+
+
+
+
+:root.slso8 {
+    --color1: #0d2b45;
+    --color2: #203c56;
+    --color3: #544e68;
+    --color4: #8d697a;
+    --color5: #d08159;
+    --color6: #ffaa5e;
+    --color7: #ffd4a3;
+    --color8: #ffecd6;
+}
+:root.custodian {
+    --color1: #2b3634;
+    --color2: #474848;
+    --color3: #6e5f52;
+    --color4: #a2856c;
+    --color5: #a0a294;
+    --color6: #dcb9a0;
+    --color7: #f3dbc6;
+    --color8: #fffefe;
+}
