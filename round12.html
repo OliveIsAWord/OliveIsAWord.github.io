@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Round 12 Code Guessing</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="round11.css" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Round 12 Code Guessing</h1>
+</header>
+<p><a href="https://cg.esolangs.gay/12">This week’s challenge</a> was to
+write an evaluator for arithmetic expressions. There were many
+restrictions on input data: Only the four basic operations, no unary
+operators (e.g. no positive and negative signs), no division by zero, no
+whitespace or other extraneous characters, no parentheses or brackets,
+no multi-digit numbers, and no signed 32 bit overflow. These extreme
+restrictions mean bountiful optimizations which were used both for
+performance and obfuscation.</p>
+<p>For this little write-up, all submissions, rather than code review
+and compression size, will be tested on validity and performance.
+Because my submission was performance focused, I wanted to measure the
+performance on every submission (ego is a bitch, nyaa~). For actual
+submissions, the <code>entry</code> function will be timed on an 11
+kilobyte file <code>small.txt</code> (11_317 bytes) and on a 1 gigabyte
+file <code>big.txt</code> (1_000_000_001 bytes). For Python submissions,
+the <code>entry</code> function will be timed only on
+<code>small.txt</code>. Keep in mind, a function which runs for 1 second
+on <code>small.txt</code> will run for about 24.5 hours on
+<code>big.txt</code>, assuming linear speed. As for validity, programs
+that fail on large data (e.g. 1000+ operations) a.k.a. programs that do
+not have <code>O(1)</code> memory usage, will be noted as such but still
+considered valid. Technically all submissions are at least
+<code>O(n)</code> since every allowed language asserts the data must be
+allocated in memory, but so long as the algorithm itself is
+<code>O(1)</code> (e.g. if the data could be streamed with minimal
+re-writing) it counts.</p>
+<h2 id="entry-1-8eaf3db6f25850557a0697981ec5435d.python2">Entry #1
+(8eaf3db6f25850557a0697981ec5435d.python2)</h2>
+<p>Boring.</p>
+<p>Only valid on Python 2 (as correctly specified by the file
+extension). Fails on too large data.</p>
+<h3 id="performance">Performance</h3>
+<p><code>small.txt -&gt; 3ms</code></p>
+<p>Attempts to run the program on larger data (e.g. 12+ kilobytes) were
+met with a <code>RecursionError</code>. Attempts to increase the
+recursion limit were met with Python itself silently terminating. No, I
+don’t know.</p>
+<h2 id="entry-2-dear_eternity.py">Entry #2 (dear_eternity.py)</h2>
+<p>Lambda calculus is cool, and the way it attempts to avoid the problem
+of Python float division is in equal measures cute and misguided.
+Otherwise, boring.</p>
+<p>Only valid on Python 2. Same issues as #1.</p>
+<h3 id="performance-1">Performance</h3>
+<p><code>Exactly the same as Entry #1.</code></p>
+<h2 id="entry-3-spaghetti.calc">Entry #3 (spaghetti.calc)</h2>
+<p>A basic substitution algorithm.</p>
+<p>Valid! Fails on data that does not fit in memory.</p>
+<h3 id="algorithm-overview">Algorithm Overview</h3>
+<p>Evaluation is done in two passes, one for multiplication and
+division, and then one for addition and subtraction. The entire
+expression is turned into a character and int list. Then, in a loop, the
+program searches for the appropriate operation (<code>*</code> or
+<code>/</code> in the first pass, and <code>+</code> or <code>-</code>
+in the second pass), then performs that operation on the two adjacent
+numbers, and then replaces those three items in the list with the single
+number result. The “numbers” start as type <code>str</code>, but for
+every operation the numbers are cast as <code>int</code> which is
+idempotent.</p>
+<h3 id="performance-2">Performance</h3>
+<p><code>small.txt -&gt; 1671ms</code></p>
+<p>Given the use of adding lists together, I imagine this function runs
+in <code>O(n^2)</code> time at the very least, in which case I doubt it
+could get through a gigabyte in our lifetimes.</p>
+<h2 id="entry-4-code_guessing.rs">Entry #4 (code_guessing.rs)</h2>
+<p>This entry uses <code>rustc</code>’s const evaluation to calculate
+the result. For literal math expressions like the input data for this
+challenge, this optimization is present even in debug builds.</p>
+<p>I had to do some finnagling to get this to run on my Windows machine:
+removing the <code>tmp</code> directory and renaming the compiled output
+file <code>eval.exe</code>.</p>
+<p>Valid, unless <code>rustc</code> is not a recognized command
+(e.g. not installed, not in PATH) or does not successfully compile the
+program (e.g. is a completely different version or a different program
+entirely). Fails on data large enough to stack overflow the
+compiler.</p>
+<h3 id="performance-3">Performance</h3>
+<p><code>small.txt -&gt; 6424ms</code></p>
+<p>Despite being written in Rust, it’s still slower than molasses
+dripping off a spoon. Attempts to run the program on larger data were
+met with <code>thread 'rustc' has overflowed its stack</code>.</p>
+<h2 id="entry-5-py">Entry #5 (py)</h2>
+<p>A basic shunting yard-ish algorithm.</p>
+<p>Valid! Fails on data that does not fit in memory.</p>
+<h3 id="performance-4">Performance</h3>
+<p><code>small.txt -&gt; 802ms</code></p>
+<p>The use of popping non-last elements and inserts probably makes this
+<code>O(n^2)</code> as well.</p>
+<h2 id="entry-6-cg.c">Entry #6 (cg.c)</h2>
+<p>An exercise in C hell.</p>
+<p>This entry is invalid by being non-functional on every level. As
+such, performance cannot be fairly measured. Theoretically, this
+algorithm is a recursive descent parser/evaluator.</p>
+<h3 id="code-review">Code Review</h3>
+<p>This code seems to be the product of a very rushed job. So, in lieu
+of performance testing, I think this entry deserves a breakdown of all
+of its awful bits.</p>
+<ul>
+<li><p>The <code>entry</code> function fails to return anything.
+<code>t();</code> should be replaced with <code>R t();</code> where
+<code>R</code> is a macro alias for <code>return</code>.</p></li>
+<li><p>Three of the macros go unused (<code>ID</code>, <code>P</code>,
+and <code>DO</code>).</p></li>
+<li><p>Two of the macros are only used once (<code>V</code>,
+<code>B</code>), which seems to defeat the purpose of a macro. And of
+course, specifying <code>void</code> arguments for just one of the
+functions which take no arguments seems weird.</p></li>
+<li><p>The parsing simply does not work. In fixing and deobfuscating the
+code, I managed to get addition and subtraction chains working, but any
+use of multiplication or division mostly resulted in erroneous output
+and/or early termination.</p></li>
+<li><p>The ‘state’ of this program is appalling. Every bit of execution
+is so intertwined that it took me a good twenty minutes just to get a
+sense of where this code went wrong. If the code actually worked, this
+point would be a positive for a code guessing competition.</p></li>
+</ul>
+<p>Maybe I’ll make a blog someday where I can ramble on about
+programming practices and the quality of various code structures. Until
+then I shall simply spill these urges here.</p>
+<h2 id="entry-7-vic.rs">Entry #7 (vic.rs)</h2>
+<p>This is what I submitted! Congrats to INSERT_PEOPLE_HERE for sussing
+me out. The obfuscation was inspired by the cover art of one of my
+favorite albums, <a
+href="https://en.wikipedia.org/wiki/Hail_to_the_Thief">Hail to the Thief
+by Radiohead</a>. You can see every buzzword I used here.</p>
+<figure>
+<img
+src="https://upload.wikimedia.org/wikipedia/en/6/61/Radioheadhailtothethief.png"
+alt="Hail to the Thief" />
+<figcaption aria-hidden="true">Hail to the Thief</figcaption>
+</figure>
+<p>The title <code>vic.rs</code> was originally going to be
+<code>vice.rs</code> but that seemed tacky and not obfuscated enough.
+Meow!</p>
+<p>Every aspect of this code was made to generate the fastest x64
+assembly possible, meaning a liberal use of <code>unsafe</code>. I would
+go so far as to say this algorithm might be the fastest possible single
+threaded solution, perhaps with minor optimizations I have not yet
+tested or discovered.</p>
+<p>This entry is valid.</p>
+<h3 id="algorithm-overview-1">Algorithm Overview</h3>
+<p>Order of operations can be reduced to a parsing problem. Without
+brackets, every input expression can be seen as a single sum of
+products. We can determine if all of a product has been evaluated just
+by checking if the next symbol is a <code>+</code>, <code>-</code>, or
+end of file. Thus, every product once finished can be accumulated in a
+single sum, and so we only need to keep two variables to maintain
+calculation state: one for the current product (<code>LIQUOR</code>),
+and one for the current sum (<code>PROSECUTED</code>).</p>
+<p>You can see my love for Rust in this code, particularly in the
+language’s type and method system. <code>OIL</code> is essentially a
+byte iterator over a string with methods <code>SCREEN</code> (a.k.a.
+“next”), which calls <code>COCKTAILS</code> (a.k.a. “next_unchecked”),
+which calls <code>GRANDGUIGNOL</code> (a.k.a. “peek_unchecked”).
+Interestingly, the assembly is unchanged if <code>OIL</code> is
+rewritten to accept a <code>&amp;str</code> as a field rather than a
+pointer and length. Go, Rust!</p>
+<p>There are two occurrences of <code>unreachable_unchecked</code>. This
+is an unsafe function used to mark a branch of execution as “undefined
+behavior”, which allows the compiler to make more aggressive
+optimizations than otherwise possible. The first use asserts that no
+divisor will ever be zero, saving a branch to a panic; this is
+equivalent to the <code>unchecked_div</code> intrinsic. The second one
+is meant to exclude the possibility of a null terminator ever being
+read. The same thing could have been accomplished with
+<code>Option&lt;NonZeroU8&gt;</code>, which is still just one byte in
+memory. In the obfuscation process this value was changed from 0 to 19,
+but an incorrect cast made the unreachable branch useless. Both of these
+cause minor performance increases on <code>big.txt</code> (when
+correctly implemented, of course.) That’s actually kind of a lie - we’ll
+get to that later.</p>
+<h3 id="troubling-findings">Troubling Findings</h3>
+<p>At some point in the obfuscation process (I have no clue when), I
+made a change or changes that made the code run <em>faster</em>.
+Significantly so. The hot loop was reduced from 36 instructions to 32,
+resulting in a dramatic performance increase (1.8s runtime down to
+1.3s). I can see two new optimizations LLVM was able to make for the
+final code.</p>
+<ul>
+<li><p>Addition/subtraction is now handled branchlessly, saving one
+compare and branch.</p></li>
+<li><p>A move between registers <code>r9d</code> and <code>eax</code> at
+the start and end of the loop have been optimized away.</p></li>
+</ul>
+<p>I suspect both of these were caused by the switch from a
+<code>match</code> statement to an <code>if/else if</code> chain, which
+is unfortunate! It just goes to show that for high performance code,
+it’s important to check that every abstraction is actually zero-cost.
+Evidently, it is also important to check a disassembler when obfuscating
+your code!</p>
+<p>Now we get into the downright strange. You know those
+<code>unreachable_unchecked</code> calls I was talking about a minute
+ago? Turns out those actually hurt performance, <em>but only on
+<code>small.txt</code></em>, consistently increasing the runtime from
+4.4 microseconds to 5.2 microseconds. On smaller data or on
+<code>big.txt</code>, the performance difference is negligible or an
+improvement. Additionally, enabling link time optimization <em>also</em>
+caused a performance hit, but not when I tested it again on the final
+obfuscated release, where it noticably <em>increased</em> performance,
+which means either the obfuscation helped with that as well or some
+malevolent god has it out for me this week - with programming, it can
+really go either way.</p>
+<h3 id="performance-5">Performance</h3>
+<pre><code>small.txt -&gt; 0ms
+big.txt -&gt; 1317ms</code></pre>
+<p>With all the optimization bugs fixed (at least the ones I know of)
+this goes down to:</p>
+<p><code>big.txt -&gt; 1269ms</code></p>
+<p>Further potential optimizations to be considered are:</p>
+<ul>
+<li><p>Skipping a product if there’s a multiplication by zero. This
+could definitely decrease performance in the worst case.</p></li>
+<li><p>Using null-terminated strings. Very idiomatic!</p></li>
+<li><p>Using concurrent execution (e.g. threads, async) to parallelize
+computation.</p></li>
+</ul>
+<p>God I am good at talking about myself.</p>
+<h2 id="entry-8-fuck.py">Entry #8 (fuck.py)</h2>
+<p>The best laugh I have had in a long while. The core of it is a
+brainfuck interpreter which accepts a program and returns the string of
+characters it produces. (mind you, this is the second round in a row
+with a totally non-functional input operator a.k.a. <code>,</code>). The
+string is then evaluated and assigned to the variable
+<code>entry</code>. What does the brainfuck program output? The string
+“eval”, of course.</p>
+<p>Only valid on Python 2. Same issues as #1.</p>
+<h3 id="performance-6">Performance</h3>
+<p><code>Same as #1. Same as it ever was.</code></p>
+<h2 id="entry-9-razetime.py">Entry #9 (razetime.py)</h2>
+<p>Converts an expression into a Stax program and runs it on an online
+interpreter via Google Chrome and Selenium. Delectably clever, but I
+don’t think I’ll be trying it out on my own machine.</p>
+<p>Valid, as long as you fill in the paths to Chrome and ChromeDriver
+and can use (https://staxlang.xyz). Fails on data that does not fit in
+memory, or, more likely, data too large to be put into a URL and
+executed online.</p>
+<h3 id="performance-7">Performance</h3>
+<p><code>Pretty bad, I would imagine.</code></p>
+<h2 id="entry-10-12.c">Entry #10 (12.c)</h2>
+<p>This one is actually quite simple. The program keeps the expression
+as a list, and every step, it finds the left-most operator that can be
+evaluated, does the operation, and moves down 2 spaces every element
+that’s to the right. Wildly inefficient in many ways, leaks memory, and
+all in GNU style to top it all off. What more could you ask of C
+code?</p>
+<p>Valid! Fails on data that does not fit in memory.</p>
+<h3 id="performance-8">Performance</h3>
+<p><code>small.txt -&gt; 21ms</code></p>
+<p>On much larger inputs, performance really tanks. There are multiple
+<code>O(n^2)</code> operations in the entry function such as looping
+through the entire expression and deleting portions of it every
+iteration. So once again, running this submission on
+<code>big.txt</code> is out of reach for us mortals.</p>
+<h2 id="entry-11-discord.py">Entry #11 (discord.py)</h2>
+<p>Delightfully creative! The bot token was invalid when I tried it, and
+I can’t find any bot <code>Reimu#1987</code>, so unfortunately no
+sleuthing to be done there. Doubly unfortunate is that Yuwuko did not
+submit, so the clear impersonation was a bit less effective!</p>
+<p>Invalid because the <code>entry</code> function does not match the
+signature specified. Otherwise, valid unless data can’t fit in
+memory.</p>
+<h3 id="performance-9">Performance</h3>
+<p><code>small.txt -&gt; 474ms</code></p>
+<h2 id="entry-12-aaa.c">Entry #12 (aaa.c)</h2>
+<p>I am told this is output from the <a
+href="https://github.com/westes/flex">Flex lexer</a>.</p>
+<p>Valid? The programs calls <code>malloc</code> and
+<code>realloc</code> so it seems that it might fail on sufficiently
+large data.</p>
+<h3 id="performance-10">Performance</h3>
+<pre><code>small.txt -&gt; 0ms
+big.txt -&gt; 19856ms</code></pre>
+<h2 id="entry-13-mdas32.py">Entry #13 (mdas32.py)</h2>
+<p>Nope.</p>
+<p>Valid? Appears to be at least <code>O(n)</code> space complexity so
+would fail on larger data.</p>
+<h3 id="performance-11">Performance</h3>
+<p><code>small.txt -&gt; 13ms</code></p>
+<h2 id="entry-14-ocr_tron.py">Entry #14 (ocr_tron.py)</h2>
+<p>Hoo mama.</p>
+<h3 id="performance-12">Performance</h3>
+<p><code>small.txt -&gt; 0ms big.txt -&gt; 1948ms</code></p>
+<p>Tested on the C code itself, which is much less funny than the
+submitted Python code but much more technically interesting, and
+obviously much more practical to time.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>Coming into this round, I had two hidden objectives. One was to write
+the fastest submission ran on 1 GB of data (or faster than Lyric’s, at
+least). The other was for zero people to guess me this round, a high
+hope considering the probability of that is only about 35% with random
+guessing alone. Turns out I succeeded at the first and miserably failed
+at the second (I was the most guessed person of the entire round).
+Here’s the performance leaderboards:</p>
+<p>entry #7 (vic.rs) <strong>1317 ms | 0 ms</strong></p>
+<p>entry #14 (ocr_tron.py) <strong>1948ms | 0 ms</strong></p>
+<p>entry #12 (aaa.c) <strong>19856 ms | 0 ms</strong></p>
+<p>entry #1 (8eaf3db6f25850557a0697981ec5435d.python2) <strong>— | 3
+ms</strong></p>
+<p>entry #2 (dear_eternity.py) <strong>— | 3 ms</strong></p>
+<p>entry #8 (fuck.py) <strong>— | 3 ms</strong></p>
+<p>entry #13 (mdas32.py) <strong>— | 13 ms</strong></p>
+<p>entry #10 (12.c) <strong>— | 21 ms</strong></p>
+<p>entry #11 (discord.py) <strong>— | 474 ms</strong></p>
+<p>entry #5 (py) <strong>— | 802 ms</strong></p>
+<p>entry #3 (spaghetti.calc) <strong>— | 1671 ms</strong></p>
+<p>entry #4 (code_guessing.rs) <strong>— | 6424 ms</strong></p>
+<p>entry #9 (razetime.py) <strong>Probably pretty slow</strong></p>
+<p>entry #6 (cg.c) <strong>Disqualified</strong></p>
+</body>
+</html>
