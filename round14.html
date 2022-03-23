@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Round 14</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="round11.css" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<h1 id="round-14-code-guessing">Round 14 Code Guessing</h1>
+<p><a href="https://cg.esolangs.gay/14">This week’s challenge</a> was to
+calculate a dot product.</p>
+<h2 id="entry-1-written-in-rustc">Entry #1 (written in Rust/C)</h2>
+<p>This one has a medley of solutions with varying levels of accuracy
+and performance. <code>entry</code> calls one of these functions at
+random.</p>
+<ul>
+<li>An “idiomatic” function which uses Rust’s robust iterator methods.
+Bizarrely, the <code>zip</code> function is used rather than the method,
+and <code>fold</code> is used where <code>sum</code> would do the same
+thing. Here’s how a truly idiomatic solution would look, in my
+opinion:</li>
+</ul>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> entry(a<span class="op">:</span> <span class="op">&amp;</span>[<span class="dt">f64</span>]<span class="op">,</span> b<span class="op">:</span> <span class="op">&amp;</span>[<span class="dt">f64</span>]) <span class="op">-&gt;</span> <span class="dt">f64</span> <span class="op">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    a<span class="op">.</span>iter()<span class="op">.</span>zip(b)<span class="op">.</span>map(<span class="op">|</span>(u<span class="op">,</span> v)<span class="op">|</span> u <span class="op">*</span> v)<span class="op">.</span>sum()</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<ul>
+<li><p>A “simple” function which is programmed in a C-like way.</p></li>
+<li><p>A “C” function which is a call to some basic C code compiled
+along with the project.</p></li>
+<li><p>A “parallel” function which uses Rayon. The initial Vec
+allocation makes this almost 8 times slower than the idiomatic
+function.</p></li>
+<li><p>A “lame SIMD” function which is just kinda ugly.</p></li>
+<li><p>A “SIMD” function. It checks every iteration if it has at least 4
+floats left rather than calculating parity before the loop, which
+probably incurs a performance penalty.</p></li>
+<li><p>A “FMA” function which requires an x86 with support for the <a
+href="https://en.wikipedia.org/wiki/FMA_instruction_set">FMA instruction
+set</a>. With this, it’s able to add 4 floats with one instruction. It
+has the same parity issue as the SIMD function. If FMA is not available,
+it falls back on the SIMD function. It also uses
+<code>mem::transmute</code> which I really hope isn’t
+necessary.</p></li>
+<li><p>An “approximation” function which attempts to interpolate a dot
+product in a very incorrect but amusing manner.</p></li>
+<li><p>A “Parallel SIMD” function which goes unused in
+<code>entry</code>. It takes a threadpool and gives a slice for each
+thread to work with, each using the SIMD function
+independently.</p></li>
+</ul>
+<p>I calculated the performance of each of these functions on the
+provided 100000 element slices. Out of 10 runs, the last 3 were averaged
+to eliminate warm-up. This obviously does not show variance or warm-up
+time, and isn’t rigorous to begin with, so take this data as you will.
+The final calculation result is also displayed.</p>
+<pre><code>FMA - (took 58.5µs) 25080.896954796997
+Simple - (took 66.8µs) 25080.8969547973
+SIMD - (took 67.3µs) 25080.89695479715
+C    - (took 69.2µs) 25080.8969547973
+Idiomatic - (took 75.0µs) 25080.8969547973
+Approximate - (took 103.1µs) 25065.940584912467
+Lame SIMD - (took 220.5µs) 25080.896954796994
+Parallel SIMD - (took 387.8µs) 25080.896954797114
+Parallel - (took 403.2µs) 25080.896954797077</code></pre>
+<h2 id="entry-2-softdouble.c">Entry #2 (softdouble.c)</h2>
+<p>This entry is evil, and uses two 32-bit floats to calculate 64-bit
+floats in software. It is beautiful, wonderfully executed, and
+reasonably accurate. The doc comments are lovely. I want to kiss this
+person on the lips.</p>
+<p>From the interview:</p>
+<pre><code>Coral: it&#39;s a mostly-compliant double implementation using only float operations. took way more work than i thought it would but it&#39;s like correct in &gt;99% of the cases
+...
+but the gist of it is just, extract the exponent and mantissa from the two floats representing the double, then do whatever operations on the thing and then turn it back
+
+Olive: so do f1 and f2 contain valid float values?
+    
+Coral: in almost all cases they do. a float is only NaN when the exponent is all ones, which is not very likely. but when it does happen, the code breaks</code></pre>
+<h2 id="entry-3-golf.py">Entry #3 (golf.py)</h2>
+<p>My submission! This is hopefully a (nearly) perfect golf of every
+language allowed for this round. They are all encoded within
+<code>file</code>, along with some other goodies like my true identity.
+A single command line argument is passed and used as a key. Here is
+every encoded message.</p>
+<p><code>--c</code></p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">// https://discord.com/channels/346530916832903169/726738757092376627/952076141852753960</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#define o double</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>o entry<span class="op">(</span>o<span class="op">*</span>b<span class="op">,</span>o<span class="op">*</span>r<span class="op">,</span><span class="dt">size_t</span> p<span class="op">){</span>o _<span class="op">=</span><span class="dv">0</span><span class="op">;</span><span class="cf">while</span><span class="op">(</span>p<span class="op">--)</span>_<span class="op">+=*</span>r<span class="op">++**</span>b<span class="op">++;</span><span class="cf">return</span> _<span class="op">;}</span></span></code></pre></div>
+<p>The top comment is a discord message link from the organizer allowing
+solutions that only work on one compiler. This code implicitly uses
+<code>size_t</code> without the proper include, which is only legal on
+MSVC (and Clang targeting MSVC, which is what I used). Please admire the
+awful <code>*r++**b++</code>.</p>
+<p><code>--python</code></p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>entry<span class="op">=</span><span class="bu">__import__</span>(<span class="st">&quot;numpy&quot;</span>).dot</span></code></pre></div>
+<p>This saves one character off the naive import. Of course this is only
+legal if Numpy is allowed.</p>
+<p><code>--bqn</code></p>
+<pre><code>Entry←+´×</code></pre>
+<p>The elegance of BQN makes this solution entirely uninteresting.</p>
+<p><code>--rust</code></p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode rust"><code class="sourceCode rust"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">fn</span> entry(a<span class="op">:&amp;</span>[<span class="dt">f64</span>]<span class="op">,</span>b<span class="op">:&amp;</span>[<span class="dt">f64</span>])<span class="op">-&gt;</span><span class="dt">f64</span><span class="op">{</span>a<span class="op">.</span>iter()<span class="op">.</span>zip(b)<span class="op">.</span>map(<span class="op">|</span>(u<span class="op">,</span>v)<span class="op">|</span>u<span class="op">*</span>v)<span class="op">.</span>sum()<span class="op">}</span></span></code></pre></div>
+<p>Interestingly, this is just the idiomatic solution with whitespace
+removed! Rust is a lovely language :)</p>
+<p><code>--the_secret_to_it_all</code></p>
+<pre><code>https://discord.com/channels/346530916832903169/726738757092376627/952348806647803985</code></pre>
+<p>This link points to this Discord message: [[Pasted image
+20220317220849.png]] If a guesser were to find this key, they would be
+treated to the identity of the submitter!</p>
+<p><code>A</code></p>
+<pre><code>DIRTYDIRTYHACKER
+BURNBURNINHELLIHOPEYOUBURNINHELL
+
+
+
+I know where you live.</code></pre>
+<p>Just a fun little message. This is impossible to display on the main
+program, and would only be seen by people who were reverse-engineering
+<code>file</code>.</p>
+<p>Here’s how the program works. First, if the current execution thread
+isn’t main, or if exactly 2 command line arguments weren’t passed (the
+path of the program and the user provided key), execution halts. If that
+key doesn’t match the regex <code>--[a-z_]</code>, it also halts. Then
+we check it against every key in <code>file</code>.</p>
+<p>The construction of <code>file</code> is pretty straightforward. It
+is a collection of binary chunks appended together. Each chunk consists
+of 32 bytes representing the SHA-256 hash of its key in little endian,
+followed by one byte representing the length of its message, followed by
+the message itself. This message is encrypted with the Vigenère cipher
+using the key. This means you have to know the original key in order to
+decrypt the message.</p>
+<p>The SHA-256 hash of the user-provided key is compared against every
+chunk in <code>file</code>, and if one matches the corresponding message
+is decrypted and printed. Funny enough, the <code>entry</code> function
+itself is used to parse the hash as a 32-byte little endian integer.</p>
+<p>The choice of Vigenère cipher was intentional. It was meant to be
+non-trivial but feasible to crack. The key <code>A</code> in particular
+should be particularly easy. Actually, I’m realizing right now the key
+that reveals me is maybe way too easy to guess. It’s difficult for me to
+know!</p>
+<h2 id="entry-4-entry.py">Entry #4 (entry.py)</h2>
+<p>This one uses Selenium to access the code guessing website itself. We
+see an inline lambda decorator, which i didn’t even know was possible.
+Just when you think you’ve seen it all with Python, huh? We also see the
+return of Coltrans’ <a href="https://esolangs.org/wiki/MESON">MESON</a>
+to code guessing. Needless to say this entry is evil and I patiently
+await for someone else explain it to me.</p>
+<h2 id="entry-5-6-and-7">Entry #5, 6, and 7</h2>
+<p>Boring.</p>
+<h2 id="entry-8-inter.c">Entry #8 (inter.c)</h2>
+<p>This entry uses SDL to outsource the calculation to a human with a
+ruler and protractor! I’m not sure how the actual calculation is done,
+but suffice to say it requires some math the submitter is displeased
+with.</p>
+<h2 id="entry-9-code.c">Entry #9 (code.c)</h2>
+<p>A glorified assembly solution. It certainly looks handwritten.</p>
+<h2 id="entry-10-dedebe92.py">Entry #10 (dedebe92.py)</h2>
+<p>This entry is also evil. I think the intention is to leech off a
+nearby C entry. I couldn’t get it to work, even after adjusting some
+parts to work on Windows. I like this one.</p>
+<h2 id="entry-11-cg.py">Entry #11 (cg.py)</h2>
+<p>This entry is a who’s who of lambda calculus constructions, and oh
+boy am I a sucker for lambda calculus. Do I understand it? No, not
+really. But do I like it? Yes :)</p>
+<p>From the interview:</p>
+<pre><code>Jimothy: the initial idea was to hack together a church-encoded solution in haskell, and I got halfway through that before realising there were language restrictions
+
+Olive: looool
+
+Jimothy: so I thought why not python me a haskell for great good
+
+Olive: nice
+
+Jimothy: I wanted to do it full combinator style, but the pointfree.io code for map and fold ran into an infinite loop
+
+Olive: i see
+Olive: the use of the Fn class is really cool, where&#39;d you get the idea?
+
+Jimothy: I wrote that so I could emulate `(.)` and `&lt;*&gt;` in python, basically I just wanted to write haskell :P
+Jimothy: at first I was going to convert the floats to pairs of church integers, at that point the `Fn` class was overloaded with `*` and `@` instead of `+` and `*`
+Jimothy: then I got lazy</code></pre>
+<h2 id="entry-12-file.py">Entry #12 (file.py)</h2>
+<p>This one didn’t work for me. It created python scripts in its
+directory, made HTTP requests, opened scary windows that immediately
+closed, and who knows what else. Impressive and utterly
+incomprehensible. Have a nice day.</p>
+<h2 id="entry-13-cg14">Entry #13 (cg14)</h2>
+<p>This is a simple little polyglot program in C, Python, and BQN.
+Interestingly, the submitter has apparently forgotten that
+<code>zip</code> in Python is not a method like it is in Rust, so I
+suppose Rust is also here in spirit.</p>
+</body>
+</html>
